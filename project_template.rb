@@ -39,13 +39,13 @@ end
 if yes?("Gmail SMTP in development?")
 	email = ask("email: ")
 	password = ask("password: ")
-	environment "config.action_mailer.raise_delivery_errors = false", env: "development"
+	environment "config.action_mailer.raise_delivery_errors = true", env: "development"
 	environment "config.action_mailer.delivery_method = :smtp", env: "development"
 	environment "config.action_mailer.smtp_settings = {
    :address              => 'smtp.gmail.com',
    :port                 => 587,
-   :user_name            => #{email},
-   :password             => #{password},
+   :user_name            => '" + email + "',
+   :password             => '" + password + "',
    :domain               => 'gmail.com',
    :authentication       => 'plain',
    :enable_starttls_auto => true
