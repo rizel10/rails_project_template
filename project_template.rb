@@ -1,12 +1,5 @@
 gem "paranoia"
 
-if yes?("Include authentication?")
-	auth = true
-	gem "devise"
-	
-	token_auth = ask("Include token_authentication?\n\n1. simple_auth_token generator\n\n(any key to skip)\n")
-end
-
 if yes?("Geolocation queries?")
 	gem "geokit-rails"
 end
@@ -22,7 +15,20 @@ if yes?("Using delayed_jobs?")
 	gem "delayed_job_active_record"
 end
 
-case ask("Which paginator gem?\n\n1. kaminari\n2. will_paginate\n\n(any key to skip)\n")
+if yes?("Include push notification?")
+	push = true
+	gem "houston"
+	gem "fcm"
+end
+
+if yes?("Include authentication?")
+	auth = true
+	gem "devise"
+	
+	token_auth = ask("Include token_authentication?\n\n1. simple_auth_token generator\n- any key to skip\n")
+end
+
+case ask("Which paginator gem?\n\n1. kaminari\n2. will_paginate\n- any key to skip\n")
 when "1"
 	gem "kaminari"
 	kaminari = true
@@ -30,10 +36,22 @@ when "2"
 	gem "will_paginate"
 end
 
-if yes?("Include push notification?")
-	push = true
-	gem "houston"
-	gem "fcm"
+if yes?("Gmail SMTP in development?")
+	email = ask("email: ")
+	password = ask("password: ")
+	environment "config.action_mailer.raise_delivery_errors = false", env: "development"
+	environment "config.action_mailer.delivery_method = :smtp", env: "development"
+	environment "config.action_mailer.smtp_settings = {
+   :address              => 'smtp.gmail.com',
+   :port                 => 587,
+   :user_name            => #{email},
+   :password             => #{password},
+   :domain               => 'gmail.com',
+   :authentication       => 'plain',
+   :enable_starttls_auto => true
+  }", env: "development"
+	environment "config.action_mailer.default_url_options = { protocol: 'http', :host => 'localhost:3000' }", env: 'development'
+
 end
 
 if yes?("Using rvm?")
@@ -71,7 +89,7 @@ after_bundle do
 		if uploader_name == ""
 			uploader_name = "Avatar"
 		end
-		generate(:carrierwave, uploader_name)
+		generate(:uploader, uploader_name)
 	end
 
 	if delayed_jobs
