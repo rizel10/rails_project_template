@@ -95,7 +95,7 @@ after_bundle do
 
 		inside('config/initializers') do
 			run("echo FCM_PUSHER = FCM.new(YAML.load_file(Rails.root.to_s + '/config/fcm.yml')[Rails.env]['fcm_key']) > fcm.rb")
-			run("printf \"case Rails.env\nwhen \"development\"\n\tAPN = Houston::Client.development\n\tAPN.certificate = File.read(\"apple_certificates/development.pem\")\nwhen \"production\"\n\tAPN = Houston::Client.production\n\tAPN.certificate = File.read(\"apple_certificates/production.pem\")\nend\" > houston.rb")
+			run("printf \"case Rails.env\nwhen \"development\"\n\tAPN = Houston::Client.development\n\tAPN.certificate = File.read('apple_certificates/development.pem')\nwhen \"production\"\n\tAPN = Houston::Client.production\n\tAPN.certificate = File.read('apple_certificates/production.pem')\nend\" > houston.rb")
 		end
 	end
 
