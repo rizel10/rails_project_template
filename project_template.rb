@@ -18,7 +18,7 @@ after_bundle do
 		generate(:"devise:install")
 		devise_model_name = ask("Devise model name:")
 		generate(:devise, devise_model_name)
-		if token_auth == 1
+		if token_auth.to_i == 1
 			inside('lib') do
 			  run "wget http://github.com/rizel10/simple_token_auth/archive/master.zip && unzip master.zip 'simple_token_auth-master/generators/*' && rsync -av simple_token_auth-master/generators ./ && rm -rf master.zip && rm -rf simple_token_auth-master"
 			end
