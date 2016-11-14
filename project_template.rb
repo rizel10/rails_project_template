@@ -1,4 +1,5 @@
 gem "paranoia"
+gem "faker"
 
 if yes?("Geolocation queries?")
 	gem "geokit-rails"
@@ -21,9 +22,18 @@ if yes?("Include push notification?")
 	gem "fcm"
 end
 
+if yes?("Include authorization?")
+	pundit = true
+	gem "pundit"
+end
+
 if yes?("Include authentication?")
 	auth = true
 	gem "devise"
+
+	if yes?("Facebook OAuth2 user authentication?")
+		gem "koala"
+	end
 	
 	token_auth = ask("Include token_authentication?\n\n1. simple_auth_token generator\n- any key to skip\n")
 end
@@ -51,6 +61,22 @@ if yes?("Gmail SMTP in development?")
    :enable_starttls_auto => true
   }", env: "development"
 	environment "config.action_mailer.default_url_options = { protocol: 'http', :host => 'localhost:3000' }", env: 'development'
+
+end
+
+if yes?("Duplicate SMTP config for production?")
+	environment "config.action_mailer.raise_delivery_errors = false", env: "production"
+	environment "config.action_mailer.delivery_method = :smtp", env: "production"
+	environment "config.action_mailer.smtp_settings = {
+   :address              => 'smtp.gmail.com',
+   :port                 => 587,
+   :user_name            => '" + email + "',
+   :password             => '" + password + "',
+   :domain               => 'gmail.com',
+   :authentication       => 'plain',
+   :enable_starttls_auto => true
+  }", env: "production"
+	environment "config.action_mailer.default_url_options = { protocol: 'http', :host => 'localhost:3000' }", env: 'production'
 
 end
 
@@ -98,6 +124,10 @@ after_bundle do
 
 	if kaminari
 		generate(:"kaminari:config")
+	end
+
+	if pundit
+		generate(:"pundit:install")
 	end
 
 	if push
